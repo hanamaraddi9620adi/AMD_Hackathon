@@ -1832,32 +1832,40 @@
             const root = document.documentElement;
             if (theme === 'obsidian') {
                 root.style.setProperty('--bg-obsidian', '#020204');
-                root.style.setProperty('--bg-card', 'rgba(8, 8, 12, 0.65)');
-                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.05)');
+                root.style.setProperty('--bg-glass', 'rgba(8, 8, 12, 0.65)');
+                root.style.setProperty('--border-glow', 'rgba(255, 255, 255, 0.05)');
+                root.style.setProperty('--shadow-premium', '0 8px 32px rgba(0, 0, 0, 0.37)');
+                root.style.setProperty('--shadow-inset', 'inset 0 1px 0 rgba(255, 255, 255, 0.1)');
                 root.style.setProperty('--accent-cyan', '#00f5ff');
                 root.style.setProperty('--accent-gold', '#fbbf24');
                 root.style.setProperty('--text-primary', '#f9fafb');
                 root.style.setProperty('--text-secondary', '#9ca3af');
             } else if (theme === 'ryzen') {
                 root.style.setProperty('--bg-obsidian', '#0c0705');
-                root.style.setProperty('--bg-card', 'rgba(18, 12, 10, 0.75)');
-                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.06)');
+                root.style.setProperty('--bg-glass', 'rgba(18, 12, 10, 0.75)');
+                root.style.setProperty('--border-glow', 'rgba(255, 255, 255, 0.06)');
+                root.style.setProperty('--shadow-premium', '0 8px 32px rgba(0, 0, 0, 0.4)');
+                root.style.setProperty('--shadow-inset', 'inset 0 1px 0 rgba(255, 255, 255, 0.1)');
                 root.style.setProperty('--accent-cyan', '#ff5500');
                 root.style.setProperty('--accent-gold', '#ffaa00');
                 root.style.setProperty('--text-primary', '#fbfaf8');
                 root.style.setProperty('--text-secondary', '#d1c7bd');
             } else if (theme === 'aurora') {
                 root.style.setProperty('--bg-obsidian', '#f3f4f6');
-                root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.75)');
-                root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.08)');
+                root.style.setProperty('--bg-glass', 'rgba(255, 255, 255, 0.75)');
+                root.style.setProperty('--border-glow', 'rgba(0, 0, 0, 0.08)');
+                root.style.setProperty('--shadow-premium', '0 8px 32px rgba(0, 0, 0, 0.08)');
+                root.style.setProperty('--shadow-inset', 'inset 0 1px 0 rgba(255, 255, 255, 1)');
                 root.style.setProperty('--accent-cyan', '#0f766e');
                 root.style.setProperty('--accent-gold', '#b45309');
                 root.style.setProperty('--text-primary', '#111827');
                 root.style.setProperty('--text-secondary', '#4b5563');
             } else if (theme === 'bloomberg') {
                 root.style.setProperty('--bg-obsidian', '#060b13');
-                root.style.setProperty('--bg-card', 'rgba(12, 22, 36, 0.7)');
-                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.04)');
+                root.style.setProperty('--bg-glass', 'rgba(12, 22, 36, 0.7)');
+                root.style.setProperty('--border-glow', 'rgba(255, 255, 255, 0.04)');
+                root.style.setProperty('--shadow-premium', '0 8px 32px rgba(0, 0, 0, 0.45)');
+                root.style.setProperty('--shadow-inset', 'inset 0 1px 0 rgba(255, 255, 255, 0.1)');
                 root.style.setProperty('--accent-cyan', '#10b981');
                 root.style.setProperty('--accent-gold', '#00a2ff');
                 root.style.setProperty('--text-primary', '#f1f5f9');
