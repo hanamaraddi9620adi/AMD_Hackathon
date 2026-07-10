@@ -5,35 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Swing Trading Copilot - Powered by AMD Ryzen AI</title>
     
-    <!-- Premium Google Fonts & Icon Set -->
+    <!-- Premium Google Fonts & Lucide Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         :root {
-            /* Linear/Vercel Design System Tokens */
-            --bg-obsidian: #050507;
-            --bg-card: rgba(255, 255, 255, 0.015);
-            --bg-card-hover: rgba(255, 255, 255, 0.03);
-            --border-color: rgba(255, 255, 255, 0.055);
-            --border-color-hover: rgba(255, 255, 255, 0.12);
+            /* Linear & Stripe Caliber Theme Tokens */
+            --bg-obsidian: #030303;
+            --bg-glass: rgba(10, 10, 12, 0.45);
+            --bg-glass-hover: rgba(18, 18, 24, 0.65);
+            --border-glow: rgba(255, 255, 255, 0.03);
+            --border-glow-active: rgba(0, 245, 255, 0.35);
             
             --accent-cyan: #00f5ff;
             --accent-gold: #fbbf24;
             --accent-green: #10b981;
             --accent-red: #f43f5e;
             
-            --text-primary: #f3f4f6;
+            --text-primary: #f9fafb;
             --text-secondary: #9ca3af;
             --text-muted: #4b5563;
             
             --font-main: 'Plus Jakarta Sans', 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
             
-            --glass-blur: blur(20px);
-            --shadow-glow: 0 0 30px rgba(0, 245, 255, 0.06);
-            --shadow-glow-gold: 0 0 30px rgba(251, 191, 36, 0.06);
-            --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --glass-blur: blur(24px);
+            --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --transition-premium: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -53,8 +52,8 @@
             letter-spacing: -0.01em;
         }
 
-        /* Particle constellation back grid */
-        #bg-canvas {
+        /* 1. Glowing Mesh Gradient Background & Grid Lines */
+        #mesh-grid-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -62,15 +61,43 @@
             height: 100vh;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.6;
+            overflow: hidden;
         }
 
-        /* Smooth Variable Transitions */
-        body, main, aside, div, span, h1, h2, p, button, select, option, border, i {
-            transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-                        border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-                        color 0.4s ease, 
-                        box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        .mesh-gradient {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 245, 255, 0.025) 0%, transparent 70%);
+            filter: blur(80px);
+            transform: translate(-50%, -50%);
+            transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1), top 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mesh-gradient-secondary {
+            position: absolute;
+            right: -100px;
+            bottom: -100px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.02) 0%, transparent 70%);
+            filter: blur(80px);
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            mask-image: radial-gradient(circle, black, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle, black, transparent 80%);
         }
 
         .app-container {
@@ -81,15 +108,15 @@
             z-index: 2;
         }
 
-        /* Sidebar - Apple/Linear Minimalist Navigation */
+        /* 2. Sidebar Navigation (Minimalist Apple/Stripe aesthetics) */
         .sidebar {
             width: 280px;
-            background: rgba(5, 5, 7, 0.9);
-            border-right: 1px solid var(--border-color);
+            background: rgba(5, 5, 7, 0.85);
+            border-right: 1px solid var(--border-glow);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 32px 24px;
+            padding: 40px 24px;
             z-index: 10;
             backdrop-filter: var(--glass-blur);
         }
@@ -98,26 +125,26 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border-glow);
         }
 
         .logo-box {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(0, 245, 255, 0.08) 0%, rgba(251, 191, 36, 0.08) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .brand-section:hover .logo-box {
-            transform: scale(1.05);
+            transform: scale(1.05) rotate(5deg);
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 12px rgba(0, 245, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
         }
 
         .logo-box i {
@@ -129,7 +156,6 @@
         .brand-text-container {
             display: flex;
             flex-direction: column;
-            gap: 1px;
         }
 
         .brand-name {
@@ -143,7 +169,7 @@
             font-size: 9px;
             color: var(--accent-cyan);
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
@@ -164,8 +190,8 @@
             border-radius: 8px;
             color: var(--text-secondary);
             font-size: 13px;
-            font-weight: 500;
-            transition: var(--transition-smooth);
+            font-weight: 600;
+            transition: var(--transition-premium);
             cursor: pointer;
             border: 1px solid transparent;
         }
@@ -178,14 +204,14 @@
 
         .nav-item.active {
             color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.025);
-            border-color: var(--border-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.005) 100%);
+            border-color: var(--border-glow);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
         }
 
         .amd-hardware-badge {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.01) 0%, transparent 100%);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 12px;
             padding: 16px;
             display: flex;
@@ -193,11 +219,11 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .amd-hardware-badge:hover {
-            border-color: rgba(251, 191, 36, 0.25);
+            border-color: rgba(251, 191, 36, 0.2);
             background: rgba(251, 191, 36, 0.02);
             transform: translateY(-2px);
         }
@@ -207,11 +233,11 @@
             height: 6px;
             border-radius: 50%;
             background: var(--accent-gold);
-            box-shadow: 0 0 10px var(--accent-gold);
+            box-shadow: 0 0 8px var(--accent-gold);
             animation: pulse-gold 2s infinite;
         }
 
-        /* Main Workspace Pane */
+        /* 3. Main Workspace Pane */
         .main-content {
             flex-grow: 1;
             height: 100vh;
@@ -219,26 +245,28 @@
             padding: 40px 48px;
             display: flex;
             flex-direction: column;
-            gap: 32px;
+            gap: 28px;
         }
 
-        /* Header Navigation elements */
         .header-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border-glow);
             padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
         }
 
         .page-title-section h1 {
             font-size: 24px;
             font-weight: 800;
             letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 60%, #a3a3a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-title-section p {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             margin-top: 2px;
         }
@@ -249,10 +277,10 @@
             gap: 12px;
         }
 
-        /* Curated Theme Switcher Dropdown */
+        /* Premium Theme Switcher */
         .theme-selector-container {
             background: rgba(255, 255, 255, 0.015);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 8px;
             padding: 8px 14px;
             display: flex;
@@ -278,10 +306,10 @@
             color: var(--text-primary);
         }
 
-        /* Workload meter */
+        /* SVG Telemetry speedometer gauge */
         .speedometer-card {
             background: rgba(255, 255, 255, 0.015);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 8px;
             padding: 8px 14px;
             display: flex;
@@ -340,7 +368,7 @@
             animation: pulse-green 1.5s infinite;
         }
 
-        /* Bento Grid Layout styling with premium shadows */
+        /* 4. Bento Grid (Stripe style) */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -348,39 +376,37 @@
         }
 
         .card-stat {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 20px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 110px;
-            transition: var(--transition-smooth);
+            height: 120px;
+            transition: var(--transition-premium);
             backdrop-filter: var(--glass-blur);
             position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
         }
 
-        .card-stat::after {
+        /* Inner card grid glow effect */
+        .card-stat::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -150%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.015), transparent);
-            transform: skewX(-20deg);
-            transition: left 0.7s ease;
-        }
-
-        .card-stat:hover::after {
-            left: 150%;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.015) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .card-stat:hover {
-            border-color: var(--border-color-hover);
+            border-color: rgba(255, 255, 255, 0.12);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            box-shadow: var(--shadow-premium);
         }
 
         .card-stat.accent-cyan:hover {
@@ -398,21 +424,21 @@
             justify-content: space-between;
             align-items: center;
             color: var(--text-secondary);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         .stat-header i {
             color: var(--text-muted);
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
         .stat-val {
             font-family: var(--font-mono);
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--text-primary);
         }
@@ -422,7 +448,7 @@
             font-weight: 600;
         }
 
-        /* Action Buttons Row */
+        /* Actions Grid Layout */
         .action-container-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -430,41 +456,42 @@
         }
 
         .btn-action {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glow);
             border-radius: 12px;
-            padding: 14px 18px;
+            padding: 14px 20px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             cursor: pointer;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
         }
 
         .btn-action:hover {
-            background: rgba(255, 255, 255, 0.025);
-            border-color: var(--border-color-hover);
-            transform: translateY(-2px);
+            background: var(--bg-glass-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px) scale(1.01);
         }
 
         .btn-action-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.015);
-            border: 1px solid var(--border-color);
-            transition: var(--transition-smooth);
+            border: 1px solid var(--border-glow);
+            transition: var(--transition-premium);
         }
 
         .btn-action:hover .btn-action-icon {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             transform: scale(1.05);
         }
 
-        /* Column cards for general layout */
+        /* 5. Dashboard Column Sections */
         .columns-row {
             display: grid;
             grid-template-columns: 1.6fr 1fr;
@@ -473,15 +500,16 @@
         }
 
         .column-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            padding: 28px;
             display: flex;
             flex-direction: column;
             gap: 20px;
             backdrop-filter: var(--glass-blur);
             animation: fadeIn 0.4s ease;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
         }
 
         .column-title {
@@ -500,7 +528,7 @@
             height: 16px;
         }
 
-        /* Active trade recommendation rows */
+        /* Active trade recommendation rows with trend sparklines */
         .positions-list {
             display: flex;
             flex-direction: column;
@@ -509,19 +537,19 @@
 
         .position-row {
             background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 14px 18px;
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .position-row:hover {
             background: rgba(255, 255, 255, 0.025);
-            border-color: var(--border-color-hover);
+            border-color: rgba(255, 255, 255, 0.12);
             transform: translateX(4px);
         }
 
@@ -529,6 +557,7 @@
             display: flex;
             flex-direction: column;
             gap: 3px;
+            width: 45%;
         }
 
         .pos-ticker {
@@ -540,6 +569,18 @@
         .pos-desc {
             font-size: 11px;
             color: var(--text-secondary);
+        }
+
+        /* Micro trend sparkline graph wrapper */
+        .pos-sparkline-box {
+            width: 80px;
+            height: 24px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .position-row:hover .pos-sparkline-box {
+            opacity: 1;
         }
 
         .pos-right {
@@ -584,8 +625,8 @@
             top: 0;
             width: 400px;
             height: 100vh;
-            background: rgba(8, 8, 10, 0.97);
-            border-left: 1px solid var(--border-color);
+            background: rgba(6, 6, 8, 0.98);
+            border-left: 1px solid var(--border-glow);
             z-index: 100;
             padding: 32px 24px;
             display: flex;
@@ -686,7 +727,7 @@
             font-size: 12px;
             line-height: 1.5;
             background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             padding: 12px;
             border-radius: 10px;
             transition: var(--transition-smooth);
@@ -709,7 +750,7 @@
         .voice-wave-container {
             height: 120px;
             background: rgba(255, 255, 255, 0.005);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -741,7 +782,7 @@
 
         .voice-console {
             background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 12px;
             padding: 18px;
             height: 220px;
@@ -766,7 +807,7 @@
         .scan-window {
             height: 240px;
             background: rgba(255, 255, 255, 0.005);
-            border: 2px dashed var(--border-color);
+            border: 2px dashed var(--border-glow);
             border-radius: 12px;
             display: flex;
             flex-direction: column;
@@ -776,7 +817,7 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .scan-window:hover {
@@ -848,7 +889,7 @@
 
         .sim-chart-container {
             background: rgba(0, 0, 0, 0.25);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 12px;
             height: 280px;
             padding: 16px;
@@ -893,14 +934,14 @@
 
         .gauge-card {
             background: rgba(255, 255, 255, 0.015);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 14px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 14px;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .gauge-card:hover {
@@ -944,14 +985,14 @@
 
         .agent-node-item {
             background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-glow);
             border-radius: 10px;
             padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
             position: relative;
-            transition: var(--transition-smooth);
+            transition: var(--transition-premium);
         }
 
         .agent-node-item:hover {
@@ -988,7 +1029,14 @@
 </head>
 <body>
 
-    <!-- Dynamic Particle Grid Canvas Background -->
+    <!-- Glowing Grid Intersections & Cursor Mesh Radial Gradient -->
+    <div id="mesh-grid-container">
+        <div class="mesh-gradient" id="cursor-glow" style="left: 50%; top: 50%;"></div>
+        <div class="mesh-gradient-secondary"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Interactive Particle Grid Canvas Background -->
     <canvas id="bg-canvas"></canvas>
 
     <div class="app-container">
@@ -1179,6 +1227,9 @@
                                     <span class="pos-ticker">INFY (Infosys Ltd)</span>
                                     <span class="pos-desc">Double Bottom breakout pattern confirmed</span>
                                 </div>
+                                <div class="pos-sparkline-box">
+                                    <canvas id="sparkline-infy" style="width: 100%; height: 100%;"></canvas>
+                                </div>
                                 <div class="pos-right">
                                     <span class="pos-price">₹1,845.20</span>
                                     <span class="pos-gain text-green">+₹8,240 (+4.67%)</span>
@@ -1190,6 +1241,9 @@
                                     <span class="pos-ticker">TCS (Tata Consultancy)</span>
                                     <span class="pos-desc">Cup & Handle breakout consolidation</span>
                                 </div>
+                                <div class="pos-sparkline-box">
+                                    <canvas id="sparkline-tcs" style="width: 100%; height: 100%;"></canvas>
+                                </div>
                                 <div class="pos-right">
                                     <span class="pos-price">₹3,920.00</span>
                                     <span class="pos-gain text-green">+₹11,320 (+3.20%)</span>
@@ -1200,6 +1254,9 @@
                                 <div class="pos-left">
                                     <span class="pos-ticker">RELIANCE (Reliance Ind)</span>
                                     <span class="pos-desc">Ascending Triangle consolidating</span>
+                                </div>
+                                <div class="pos-sparkline-box">
+                                    <canvas id="sparkline-reliance" style="width: 100%; height: 100%;"></canvas>
                                 </div>
                                 <div class="pos-right">
                                     <span class="pos-price">₹2,450.50</span>
@@ -1571,6 +1628,13 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
+        // Cursor coordinates mesh glow logic
+        const cursorGlow = document.getElementById('cursor-glow');
+        window.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
         // 1. Live Theme Switcher Logic
         function changeTheme(theme) {
             const root = document.documentElement;
@@ -1612,6 +1676,9 @@
             if (document.getElementById('tab-simulator').classList.contains('active-panel')) {
                 runMonteCarlo();
             }
+            
+            // Redraw active sparklines
+            drawSparklines();
         }
 
         // 2. Dynamic Particle Network Background logic
@@ -1658,13 +1725,6 @@
         for (let i = 0; i < numParticles; i++) {
             particles.push(new Particle());
         }
-
-        let mouseX = 0;
-        let mouseY = 0;
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
 
         function animateBg() {
             ctx.clearRect(0, 0, width, height);
@@ -1740,6 +1800,7 @@
             if (tabId === 'dashboard') {
                 head.innerText = 'Dashboard Console';
                 sub.innerText = 'Multi-agent consensus metrics and local performance monitors.';
+                setTimeout(drawSparklines, 50);
             } else if (tabId === 'voice') {
                 head.innerText = 'Voice Assistant Copilot';
                 sub.innerText = 'Talk directly to your Ryzen AI local trading coach.';
@@ -1992,6 +2053,47 @@
             
             drawSimFrame();
         }
+
+        // 4. Premium Mini Sparkline Generators for Trade Recommendations
+        function drawSparklines() {
+            const sparklines = [
+                { id: 'sparkline-infy', points: [10, 12, 8, 15, 14, 20, 18, 25], color: '#10b981' },
+                { id: 'sparkline-tcs', points: [20, 18, 22, 21, 25, 23, 28, 27], color: '#10b981' },
+                { id: 'sparkline-reliance', points: [25, 23, 24, 20, 21, 18, 19, 15], color: '#f43f5e' }
+            ];
+
+            sparklines.forEach(s => {
+                const canvas = document.getElementById(s.id);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                // Get style colors dynamically based on active theme
+                const activeColor = getComputedStyle(document.documentElement).getPropertyValue(s.color === '#10b981' ? '--accent-green' : '--accent-red').trim();
+                
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = activeColor;
+                
+                const step = canvas.width / (s.points.length - 1);
+                const min = Math.min(...s.points);
+                const max = Math.max(...s.points);
+                
+                s.points.forEach((val, idx) => {
+                    const x = step * idx;
+                    const y = canvas.height - ((val - min) / (max - min)) * (canvas.height - 4) - 2;
+                    if (idx === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            });
+        }
+        
+        // Initial drawing of sparklines
+        setTimeout(drawSparklines, 100);
     </script>
 
 </body>
