@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Swing Trading Copilot - Powered by AMD Ryzen AI</title>
+    
+    <!-- Premium Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg-obsidian: #020204;
+            --bg-card: rgba(8, 8, 12, 0.65);
+            --bg-card-hover: rgba(16, 16, 22, 0.85);
+            --border-color: rgba(255, 255, 255, 0.05);
+            
+            --accent-cyan: #00f5ff;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #4b5563;
+            
+            --font-main: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --glass-blur: blur(16px);
+            --shadow-glow: 0 0 25px rgba(0, 245, 255, 0.08);
+            --shadow-glow-gold: 0 0 25px rgba(251, 191, 36, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-obsidian);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Smooth Theme Transitions */
+        body, main, aside, div, span, h1, h2, p, button, select, option, border, i {
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        color 0.4s ease, 
+                        box-shadow 0.5s ease;
+        }
+
+        /* Interactive Particle Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Sidebar Nav styling */
+        .sidebar {
+            width: 270px;
+            background: rgba(4, 4, 6, 0.95);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 18px;
+            z-index: 10;
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+            border: 1px solid rgba(0, 245, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .brand-section:hover .logo-box {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+        .logo-box i {
+            color: var(--accent-cyan);
+            width: 20px;
+            height: 20px;
+        }
+
+        .brand-text-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        .brand-sub {
+            font-size: 9px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 24px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.02);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 245, 255, 0.04);
+            border-color: rgba(0, 245, 255, 0.1);
+            box-shadow: inset 0 0 10px rgba(0, 245, 255, 0.02);
+        }
+
+        .amd-hardware-badge {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.03) 0%, rgba(251, 191, 36, 0.005) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.1);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .amd-hardware-badge:hover {
+            border-color: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        .npu-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            box-shadow: 0 0 8px var(--accent-gold);
+            animation: pulse-gold 2s infinite;
+        }
+
+        /* Main Content Grid Panel */
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Top Header Navigation */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .page-title-section h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .page-title-section p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 1px;
+        }
+
+        .system-status-indicators {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Curated Theme Switcher Dropdown */
+        .theme-selector-container {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .theme-selector-container select {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 11px;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .theme-selector-container select option {
+            background: var(--bg-obsidian);
+            color: var(--text-primary);
+        }
+
+        /* Animated Speedometer Card */
+        .speedometer-card {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .speedometer-ring {
+            width: 16px;
+            height: 16px;
+            transform: rotate(-90deg);
+        }
+
+        .speedometer-ring-circle {
+            fill: none;
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0.15);
+        }
+
+        .speedometer-ring-val {
+            fill: none;
+            stroke-width: 2;
+            stroke: var(--accent-cyan);
+            stroke-dasharray: 44;
+            stroke-dashoffset: 20;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        .speedometer-card .metric {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .live-status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .live-status-pill .pulse-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse-green 1.5s infinite;
+        }
+
+        /* Bento Grid Layout styling with premium glows */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .card-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: var(--glass-blur);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-stat::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .card-stat:hover::after {
+            left: 150%;
+        }
+
+        .card-stat:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-stat.accent-cyan:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-stat.accent-gold:hover {
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-glow-gold);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .stat-header i {
+            color: var(--text-muted);
+            width: 14px;
+            height: 14px;
+        }
+
+        .stat-val {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .stat-footer {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Actions Grid */
+        .action-container-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        .btn-action-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover .btn-action-icon {
+            background: rgba(255, 255, 255, 0.06);
+            transform: scale(1.08);
+        }
+
+        /* Column cards with fade-in animation */
+        .columns-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 20px;
+            min-height: 420px;
+        }
+
+        .column-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            backdrop-filter: var(--glass-blur);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-title i {
+            color: var(--accent-cyan);
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Active trade rows with micro-interaction triggers */
+        .positions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .position-row {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .position-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .pos-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .pos-ticker {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .pos-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .pos-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .pos-price {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pos-gain {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Feature panels and transitions */
+        .feature-panel {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-panel.active-panel {
+            display: flex;
+            animation: paneFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes paneFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slide-out explainability details side pane */
+        .explainability-panel {
+            position: fixed;
+            right: -420px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-obsidian);
+            border-left: 1px solid var(--border-color);
+            z-index: 100;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -15px 0 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .explainability-panel.open {
+            right: 0;
+        }
+
+        .close-panel-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            align-self: flex-start;
+            transition: color 0.2s;
+        }
+
+        .close-panel-btn:hover {
+            color: var(--text-primary);
+        }
+
+        /* Premium SVG Explainability Radial Gauge */
+        .explain-gauge-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .explain-svg-gauge {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.03);
+            stroke-width: 6;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--accent-cyan);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            filter: drop-shadow(0 0 8px var(--accent-cyan));
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-center-text {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .gauge-center-text .number {
+            font-family: var(--font-mono);
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .gauge-center-text .label {
+            font-size: 9px;
+            color: var(--accent-cyan);
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .reasons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .reason-item {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+
+        .reason-item i {
+            color: var(--accent-green);
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            margin-top: 1px;
+        }
+
+        /* Voice view animations */
+        .voice-wave-container {
+            height: 120px;
+            background: rgba(255, 255, 255, 0.005);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .wave-bar {
+            width: 3px;
+            height: 15px;
+            background: var(--accent-cyan);
+            border-radius: 1px;
+            transition: height 0.1s ease;
+        }
+
+        .wave-pulsing .wave-bar {
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+
+        .wave-pulsing .wave-bar:nth-child(2n) { animation-delay: 0.15s; }
+        .wave-pulsing .wave-bar:nth-child(3n) { animation-delay: 0.3s; }
+        .wave-pulsing .wave-bar:nth-child(4n) { animation-delay: 0.45s; }
+
+        @keyframes bounce {
+            0% { height: 8px; }
+            100% { height: 60px; }
+        }
+
+        .voice-console {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .console-line {
+            display: flex;
+            gap: 6px;
+        }
+
+        .console-line.user-line { color: var(--accent-gold); }
+        .console-line.ai-line { color: var(--accent-cyan); }
+
+        /* Vision Scanning overlays */
+        .scan-window {
+            height: 240px;
+            background: rgba(255, 255, 255, 0.005);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .scan-window:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .scan-window.scanning::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            box-shadow: 0 0 8px var(--accent-cyan);
+            animation: scan-line 2s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Trade Simulator layout options */
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 20px;
+        }
+
+        .sim-controls-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .sim-slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sim-slider-group label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .sim-slider-group input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 3px;
+            border-radius: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            outline: none;
+        }
+
+        .sim-slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 6px var(--accent-cyan);
+        }
+
+        .sim-chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            height: 280px;
+            padding: 12px;
+        }
+
+        /* Highlight card for pitch */
+        .pitch-container {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05) 0%, rgba(251, 191, 36, 0.01) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pitch-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pitch-body {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #ffffff;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Circular Gauges for Portfolio Health */
+        .gauge-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .gauge-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .gauge-card:hover {
+            border-color: rgba(0, 245, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .circular-progress {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent-cyan) var(--progress-deg, 0deg), rgba(255,255,255,0.05) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .circular-progress::before {
+            content: '';
+            position: absolute;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--bg-obsidian);
+        }
+
+        .circular-progress span {
+            position: relative;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        /* Multi-agent engine grid styles */
+        .agent-node-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .agent-node-item {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .agent-node-item:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.05);
+        }
+
+        .agent-pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Particle Grid Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-top-box">
+                <div class="brand-section">
+                    <div class="logo-box">
+                        <i data-lucide="cpu"></i>
+                    </div>
+                    <div class="brand-text-container">
+                        <span class="brand-name">AI Swing Trading</span>
+                        <span class="brand-sub">CO-PILOT PANEL</span>
+                    </div>
+                </div>
+                
+                <nav class="nav-menu">
+                    <div class="nav-item active" onclick="switchTab('dashboard')">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('voice')">
+                        <i data-lucide="mic"></i>
+                        <span>Voice Copilot</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('vision')">
+                        <i data-lucide="eye"></i>
+                        <span>Vision AI Scanner</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('simulator')">
+                        <i data-lucide="flask-conical"></i>
+                        <span>Trade Simulator</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('memory')">
+                        <i data-lucide="database"></i>
+                        <span>Market Memory</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('psychology')">
+                        <i data-lucide="smile"></i>
+                        <span>Psychology Coach</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('portfolio')">
+                        <i data-lucide="pie-chart"></i>
+                        <span>Portfolio Health</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('tech')">
+                        <i data-lucide="info"></i>
+                        <span>Winning Pitch & Tech</span>
+                    </div>
+                </nav>
+            </div>
+            
+            <div class="amd-hardware-badge">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="npu-status-dot"></div>
+                    <span style="font-size: 11px; font-weight: 800; color: var(--accent-gold); letter-spacing: 0.5px;">AMD Ryzen AI</span>
+                </div>
+                <div style="font-size: 9px; color: var(--text-secondary); font-weight: 500;">Local NPU Acceleration Active</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Pane -->
+        <main class="main-content">
+            
+            <!-- Top Header Navbar -->
+            <header class="header-nav">
+                <div class="page-title-section">
+                    <h1 id="tab-heading">Dashboard Console</h1>
+                    <p id="tab-subheading">Multi-agent consensus metrics and local performance monitors.</p>
+                </div>
+                <div class="system-status-indicators">
+                    <!-- Premium Live Theme Selector -->
+                    <div class="theme-selector-container">
+                        <i data-lucide="palette" class="text-secondary" style="width: 14px; height: 14px;"></i>
+                        <select id="theme-select" onchange="changeTheme(this.value)">
+                            <option value="obsidian">Obsidian Cyberpunk</option>
+                            <option value="ryzen">AMD Horizon (Ryzen)</option>
+                            <option value="aurora">Nordic Aurora (Light Mode)</option>
+                            <option value="bloomberg">Institutional Navy</option>
+                        </select>
+                    </div>
+
+                    <!-- Dynamic Workload speedometer with SVG ring -->
+                    <div class="speedometer-card">
+                        <svg class="speedometer-ring" viewBox="0 0 16 16">
+                            <circle class="speedometer-ring-circle" cx="8" cy="8" r="7"></circle>
+                            <circle class="speedometer-ring-val" id="speed-ring" cx="8" cy="8" r="7"></circle>
+                        </svg>
+                        <span>Ryzen NPU Workload:</span>
+                        <span class="metric" id="npu-speed">38%</span>
+                    </div>
+                    <div class="live-status-pill">
+                        <div class="pulse-dot"></div>
+                        <span>LIVE MARKET MONITOR</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD VIEW -->
+            <div id="tab-dashboard" class="feature-panel active-panel">
+                <!-- Bento Metrics Grid -->
+                <section class="bento-grid">
+                    <div class="card-stat accent-cyan">
+                        <div class="stat-header">
+                            <span>Portfolio Value</span>
+                            <i data-lucide="briefcase"></i>
+                        </div>
+                        <div class="stat-val">₹4,82,500</div>
+                        <div class="stat-footer text-green">+₹18,400 (+3.9%) today</div>
+                    </div>
+                    
+                    <div class="card-stat">
+                        <div class="stat-header">
+                            <span>Open Positions</span>
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <div class="stat-val">6 Active</div>
+                        <div class="stat-footer text-gold">4 Swing / 2 Intraday</div>
+                    </div>
+                    
+                    <div class="card-stat">
+                        <div class="stat-header">
+                            <span>Win Rate (30D)</span>
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <div class="stat-val">72.5%</div>
+                        <div class="stat-footer text-green">29 Wins / 11 Losses</div>
+                    </div>
+                    
+                    <div class="card-stat accent-gold">
+                        <div class="stat-header">
+                            <span>Active Agents</span>
+                            <i data-lucide="cpu"></i>
+                        </div>
+                        <div class="stat-val">8 Active</div>
+                        <div class="stat-footer text-cyan">Ryzen consensus engine OK</div>
+                    </div>
+                </section>
+
+                <!-- Quick Action Button Row -->
+                <section class="action-container-row">
+                    <div class="btn-action" onclick="switchTab('voice')">
+                        <div class="btn-action-icon"><i data-lucide="mic" class="text-gold" style="width: 14px; height: 14px;"></i></div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700;">Ask Voice Copilot</div>
+                            <div style="font-size: 9px; color: var(--text-secondary); margin-top: 1px;">"Should I buy INFY?"</div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-action" onclick="switchTab('vision')">
+                        <div class="btn-action-icon"><i data-lucide="eye" class="text-cyan" style="width: 14px; height: 14px;"></i></div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700;">Scan Chart Pattern</div>
+                            <div style="font-size: 9px; color: var(--text-secondary); margin-top: 1px;">Drag & drop trade screenshot</div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-action" onclick="switchTab('simulator')">
+                        <div class="btn-action-icon"><i data-lucide="flask-conical" class="text-gold" style="width: 14px; height: 14px;"></i></div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700;">Run Trade Simulator</div>
+                            <div style="font-size: 9px; color: var(--text-secondary); margin-top: 1px;">Simulate risk models</div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-action" onclick="toggleConsensusView()">
+                        <div class="btn-action-icon"><i data-lucide="shield-alert" class="text-cyan" style="width: 14px; height: 14px;"></i></div>
+                        <div>
+                            <div style="font-size: 11px; font-weight: 700;">Risk Analysis Engine</div>
+                            <div style="font-size: 9px; color: var(--text-secondary); margin-top: 1px;">Toggle explainability panel</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Columns Section -->
+                <div class="columns-row">
+                    <!-- Left: Active Swing Trades -->
+                    <div class="column-card">
+                        <div class="column-title">
+                            <i data-lucide="trending-up"></i>
+                            <span>Active Trade Recommendations</span>
+                        </div>
+                        
+                        <div class="positions-list">
+                            <div class="position-row" onclick="openExplainability('INFY', 87, ['Double bottom pattern breakout detected by Ryzen Vision model', 'RSI is at 58 supporting upward momentum', 'MACD bullish crossover confirmed', 'Strong institutional volume buildup'])">
+                                <div class="pos-left">
+                                    <span class="pos-ticker">INFY (Infosys Ltd)</span>
+                                    <span class="pos-desc">Double Bottom breakout pattern confirmed</span>
+                                </div>
+                                <div class="pos-right">
+                                    <span class="pos-price">₹1,845.20</span>
+                                    <span class="pos-gain text-green">+₹8,240 (+4.67%)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="position-row" onclick="openExplainability('TCS', 74, ['Cup and handle breakout detected', 'Ryzen Consensus indicates heavy institutional support', 'Price consolidated above 200 EMA'])">
+                                <div class="pos-left">
+                                    <span class="pos-ticker">TCS (Tata Consultancy)</span>
+                                    <span class="pos-desc">Cup & Handle breakout consolidation</span>
+                                </div>
+                                <div class="pos-right">
+                                    <span class="pos-price">₹3,920.00</span>
+                                    <span class="pos-gain text-green">+₹11,320 (+3.20%)</span>
+                                </div>
+                            </div>
+                            
+                            <div class="position-row" onclick="openExplainability('RELIANCE', 42, ['Ascending triangle pattern testing resistance', 'Risk profile elevated due to high options correlation', 'Consensus is neutral to wait'])">
+                                <div class="pos-left">
+                                    <span class="pos-ticker">RELIANCE (Reliance Ind)</span>
+                                    <span class="pos-desc">Ascending Triangle consolidating</span>
+                                </div>
+                                <div class="pos-right">
+                                    <span class="pos-price">₹2,450.50</span>
+                                    <span class="pos-gain text-red">-₹1,120 (-0.45%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Consensus & System Engine -->
+                    <div class="column-card" style="justify-content: space-between;">
+                        <div class="column-title">
+                            <i data-lucide="shield-check"></i>
+                            <span>Consensus Fusion (8 Agents)</span>
+                        </div>
+                        
+                        <div style="background: rgba(0,245,255,0.015); border: 1px solid rgba(0,245,255,0.08); border-radius: 10px; padding: 14px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span style="font-size: 10px; font-weight: 800; color: var(--accent-cyan); letter-spacing: 1.5px;">BULLISH CONSENSUS</span>
+                            <span style="font-family: var(--font-mono); font-size: 26px; font-weight: 800; color: var(--text-primary);">87%</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">6 BUY / 2 WAIT / 0 SELL votes</span>
+                        </div>
+                        
+                        <!-- Interactive Agent Grid -->
+                        <div class="agent-node-grid">
+                            <div class="agent-node-item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 9px; font-weight:700;">Indicator</span>
+                                    <div class="agent-pulse-dot"></div>
+                                </div>
+                                <span style="font-size: 10px; color: var(--accent-green); font-weight:800;">BUY</span>
+                            </div>
+                            <div class="agent-node-item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 9px; font-weight:700;">Scanner</span>
+                                    <div class="agent-pulse-dot"></div>
+                                </div>
+                                <span style="font-size: 10px; color: var(--accent-green); font-weight:800;">BUY</span>
+                            </div>
+                            <div class="agent-node-item">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 9px; font-weight:700;">Risk</span>
+                                    <div class="agent-pulse-dot" style="background: var(--accent-gold); box-shadow: 0 0 8px var(--accent-gold);"></div>
+                                </div>
+                                <span style="font-size: 10px; color: var(--accent-gold); font-weight:800;">WAIT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: VOICE COPILOT -->
+            <div id="tab-voice" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <i data-lucide="mic"></i>
+                            <span>Voice Assistant Portal (Local NPU Inference)</span>
+                        </div>
+                        <button class="live-status-pill" id="voice-activation-btn" onclick="toggleVoiceRecording()" style="background: var(--accent-gold); color: #000; border: none; cursor: pointer; font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 8px;">
+                            <span>START SPEAKING</span>
+                        </button>
+                    </div>
+                    
+                    <div class="voice-wave-container" id="voice-wave">
+                        <div class="wave-bar" style="height: 15px;"></div>
+                        <div class="wave-bar" style="height: 30px;"></div>
+                        <div class="wave-bar" style="height: 45px;"></div>
+                        <div class="wave-bar" style="height: 60px;"></div>
+                        <div class="wave-bar" style="height: 30px;"></div>
+                        <div class="wave-bar" style="height: 15px;"></div>
+                    </div>
+                    
+                    <div class="voice-console" id="voice-console">
+                        <div class="console-line user-line">
+                            <span>[TRADER]:</span>
+                            <span>Click "Start Speaking" and ask: "Can I buy Infosys tomorrow?"</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: VISION AI SCANNER -->
+            <div id="tab-vision" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <i data-lucide="eye"></i>
+                            <span>Local Ryzen AI Vision Scanner</span>
+                        </div>
+                    </div>
+                    
+                    <div class="scan-window" id="scan-window" onclick="triggerChartScan()">
+                        <i data-lucide="upload-cloud" id="upload-icon" style="width: 40px; height: 40px; color: var(--text-secondary);"></i>
+                        <span id="scan-instruction" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Click to upload trade chart screenshot (INFY / TCS / RELIANCE)</span>
+                    </div>
+                    
+                    <div class="voice-console" id="vision-console">
+                        <div class="console-line">
+                            <span>[SYSTEM]:</span>
+                            <span>Vision model ready. Select a chart screenshot to trigger pattern analysis.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: TRADE SIMULATOR & WHAT-IF -->
+            <div id="tab-simulator" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="flask-conical"></i>
+                        <span>Monte Carlo Capital Simulator & Scenario Analyzer</span>
+                    </div>
+                    
+                    <div class="simulator-layout">
+                        <!-- Sliders Pane -->
+                        <div class="sim-controls-pane">
+                            <div class="sim-slider-group">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <label>Initial Capital</label>
+                                    <span id="lbl-capital" style="font-family: var(--font-mono); font-weight: 700;">₹50,000</span>
+                                </div>
+                                <input type="range" id="sim-capital" min="10000" max="200000" step="5000" value="50000" oninput="updateSimParams()">
+                            </div>
+                            
+                            <div class="sim-slider-group">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <label>Win Rate</label>
+                                    <span id="lbl-winrate" style="font-family: var(--font-mono); font-weight: 700;">65%</span>
+                                </div>
+                                <input type="range" id="sim-winrate" min="30" max="90" step="5" value="65" oninput="updateSimParams()">
+                            </div>
+                            
+                            <div class="sim-slider-group">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <label>Reward:Risk Ratio</label>
+                                    <span id="lbl-rr" style="font-family: var(--font-mono); font-weight: 700;">3.0:1</span>
+                                </div>
+                                <input type="range" id="sim-rr" min="1" max="5" step="0.5" value="3" oninput="updateSimParams()">
+                            </div>
+                            
+                            <button onclick="runMonteCarlo()" style="width: 100%; padding: 10px; background: var(--accent-cyan); color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 11px;">
+                                RUN SIMULATION
+                            </button>
+                        </div>
+                        
+                        <!-- Canvas Chart Container -->
+                        <div class="sim-chart-container">
+                            <canvas id="simChart" class="canvas-sim-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What-If Analysis Pane -->
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="git-branch"></i>
+                        <span>What-If Scenario Comparisons</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                            <span style="font-weight: 800; font-size: 13px; color: var(--accent-gold);">Scenario A: Enter Today (INFY)</span>
+                            <div style="font-family: var(--font-mono); font-size: 12px; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                <div style="display: flex; justify-content: space-between;"><span>Expected Return:</span><span class="text-green">12%</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Risk Drawdown:</span><span class="text-red">9%</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>AI Confidence:</span><span>72%</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                            <span style="font-weight: 800; font-size: 13px; color: var(--accent-cyan);">Scenario B: Enter After Earnings (INFY)</span>
+                            <div style="font-family: var(--font-mono); font-size: 12px; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+                                <div style="display: flex; justify-content: space-between;"><span>Expected Return:</span><span class="text-green">9%</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Risk Drawdown:</span><span class="text-green">4%</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>AI Confidence:</span><span class="text-cyan" style="font-weight:800;">90%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: MARKET MEMORY -->
+            <div id="tab-memory" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="database"></i>
+                        <span>Market Memory Engine & Trade Journal Stats</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;">
+                        <!-- Memory Card -->
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                                <span style="font-weight: 800; font-size: 13px;">INFY Asset Performance Memory</span>
+                                <div style="font-family: var(--font-mono); font-size: 11px; display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary); margin-top: 4px;">
+                                    <div style="display: flex; justify-content: space-between;"><span>Total Traded:</span><span>12 times</span></div>
+                                    <div style="display: flex; justify-content: space-between;"><span>Win Rate:</span><span class="text-green">83%</span></div>
+                                    <div style="display: flex; justify-content: space-between;"><span>Avg. Holding Time:</span><span>18 Days</span></div>
+                                    <div style="display: flex; justify-content: space-between; color: var(--accent-red);"><span>Critical Mistake:</span><span>Exited too early on trend breakouts</span></div>
+                                    <div style="display: flex; justify-content: space-between; color: var(--accent-gold);"><span>AI Suggestion:</span><span>Trailing stop-loss instead of fixed target</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Weekly Report Card -->
+                        <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                            <span style="font-weight: 800; font-size: 13px; color: var(--accent-cyan);">Weekly AI Journal Report</span>
+                            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 6px;">
+                                <div style="display: flex; justify-content: space-between;"><span>Win Rate (Weekly):</span><span class="text-green">70%</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Avg. Gain:</span><span class="text-green">+₹4,200</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Avg. Loss:</span><span class="text-red">-₹1,800</span></div>
+                                <p style="font-size: 11px; color: var(--accent-gold); border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 4px;">
+                                    <i data-lucide="alert-triangle" style="width: 12px; height: 12px; display: inline; margin-right: 4px; vertical-align: middle;"></i>
+                                    Emotional mistakes detected: FOMO purchase on Wednesday.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: PSYCHOLOGY COACH -->
+            <div id="tab-psychology" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="smile"></i>
+                        <span>Trading Psychology Mentor</span>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="voice-console" id="psy-console" style="height: 180px;">
+                            <div class="console-line">
+                                <span>[COACH]:</span>
+                                <span>Discipline is the differentiator. Click below to discuss a scenario with me.</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <button onclick="triggerPsychologyFeedback('loss')" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); cursor: pointer; font-size: 11px; transition: all 0.2s ease;">
+                                "I lost ₹20,000 today"
+                            </button>
+                            <button onclick="triggerPsychologyFeedback('fomo')" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); cursor: pointer; font-size: 11px; transition: all 0.2s ease;">
+                                "I feel FOMO on a rally"
+                            </button>
+                            <button onclick="triggerPsychologyFeedback('win')" style="padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); cursor: pointer; font-size: 11px; transition: all 0.2s ease;">
+                                "I got a big win today"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: PORTFOLIO HEALTH -->
+            <div id="tab-portfolio" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="pie-chart"></i>
+                        <span>Portfolio Health Intelligence</span>
+                    </div>
+                    
+                    <div class="gauge-row">
+                        <div class="gauge-card">
+                            <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">Diversification Score</span>
+                            <div class="circular-progress" style="--progress-deg: 300deg;">
+                                <span class="text-cyan">84/100</span>
+                            </div>
+                        </div>
+                        <div class="gauge-card">
+                            <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">Sector Concentration</span>
+                            <div class="circular-progress" style="--progress-deg: 260deg; background-image: conic-gradient(var(--accent-gold) 260deg, rgba(255,255,255,0.05) 0deg);">
+                                <span class="text-gold">72% Tech</span>
+                            </div>
+                        </div>
+                        <div class="gauge-card">
+                            <span style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">Cash Allocation</span>
+                            <div class="circular-progress" style="--progress-deg: 72deg; background-image: conic-gradient(var(--accent-green) 72deg, rgba(255,255,255,0.05) 0deg);">
+                                <span class="text-green">20% Cash</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                        <span style="font-weight: 800; font-size: 12px; color: var(--accent-cyan);">Suggested Health Rebalancing</span>
+                        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                            Correlation between holdings (INFY and TCS) is high (0.84). Sector concentration is elevated. Suggest rebalancing to Macro economy sectors or holding 5% more cash buffer.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: TECH STACK & WINNING PITCH -->
+            <div id="tab-tech" class="feature-panel">
+                <div class="column-card">
+                    <div class="column-title">
+                        <i data-lucide="info"></i>
+                        <span>Winning Pitch & Architecture</span>
+                    </div>
+                    
+                    <!-- Winning Pitch container -->
+                    <div class="pitch-container">
+                        <div class="pitch-title">
+                            <i data-lucide="award"></i>
+                            <span>THE HACKATHON WINNING PITCH</span>
+                        </div>
+                        <p class="pitch-body">
+                            "We built the first Agentic AI Trading Copilot that combines voice interaction, on-device computer vision accelerated by AMD Ryzen AI, multi-agent financial reasoning, explainable AI, personalized market memory, and quantitative trade simulation. Instead of replacing traders, it augments their decision-making with an institutional-grade AI research team that runs securely in a hybrid edge-cloud architecture."
+                        </p>
+                    </div>
+
+                    <!-- Tech stack information grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <span style="font-weight: 800; color: #ffffff;">AMD Ryzen AI Core Distribution</span>
+                            <ul style="padding-left: 16px; display: flex; flex-direction: column; gap: 6px;">
+                                <li><strong>NPU:</strong> On-device voice translation & vision pattern scanner models (Zero cloud overhead).</li>
+                                <li><strong>CPU:</strong> Technical indicators, multi-agent orchestration, Monte Carlo simulation math.</li>
+                                <li><strong>GPU:</strong> Vector operations & UI/canvas rendering path layouts.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <span style="font-weight: 800; color: #ffffff;">Docker Composer Infrastructure Services</span>
+                            <div style="font-family: var(--font-mono); font-size: 11px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                $ docker compose up<br>
+                                Running: FastAPI Backend, Vision Model, Voice Model, Vector DB (Memory), Redis cache, Agent Orchestrator.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Slide Out Side Panel (Explainability Verdict Engine) -->
+        <div class="explainability-panel" id="explainability-panel">
+            <button class="close-panel-btn" onclick="toggleConsensusView()">
+                <i data-lucide="chevron-right" style="width: 20px; height: 20px;"></i>
+            </button>
+            
+            <div class="explain-header">
+                <h2 id="explain-title">TCS (Tata Consultancy)</h2>
+                <p>NPU Explainability Verdict</p>
+            </div>
+            
+            <!-- Premium Radial SVG Confidence Gauge -->
+            <div class="explain-gauge-container">
+                <svg class="explain-svg-gauge" viewBox="0 0 100 100">
+                    <circle class="gauge-track" cx="50" cy="50" r="40"></circle>
+                    <circle class="gauge-fill" id="explain-gauge-fill" cx="50" cy="50" r="40"></circle>
+                </svg>
+                <div class="gauge-center-text">
+                    <span class="number" id="explain-score">87%</span>
+                    <span class="label">NPU CONFIDENCE</span>
+                </div>
+            </div>
+            
+            <div class="reasons-list" id="explain-reasons">
+                <div class="reason-item">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Breakout confirmed on high volume</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripting logic -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // 1. Live Theme Switcher Logic
+        function changeTheme(theme) {
+            const root = document.documentElement;
+            if (theme === 'obsidian') {
+                root.style.setProperty('--bg-obsidian', '#020204');
+                root.style.setProperty('--bg-card', 'rgba(8, 8, 12, 0.65)');
+                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.05)');
+                root.style.setProperty('--accent-cyan', '#00f5ff');
+                root.style.setProperty('--accent-gold', '#fbbf24');
+                root.style.setProperty('--text-primary', '#f9fafb');
+                root.style.setProperty('--text-secondary', '#9ca3af');
+            } else if (theme === 'ryzen') {
+                root.style.setProperty('--bg-obsidian', '#0c0705');
+                root.style.setProperty('--bg-card', 'rgba(18, 12, 10, 0.75)');
+                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.06)');
+                root.style.setProperty('--accent-cyan', '#ff5500');
+                root.style.setProperty('--accent-gold', '#ffaa00');
+                root.style.setProperty('--text-primary', '#fbfaf8');
+                root.style.setProperty('--text-secondary', '#d1c7bd');
+            } else if (theme === 'aurora') {
+                root.style.setProperty('--bg-obsidian', '#f3f4f6');
+                root.style.setProperty('--bg-card', 'rgba(255, 255, 255, 0.75)');
+                root.style.setProperty('--border-color', 'rgba(0, 0, 0, 0.08)');
+                root.style.setProperty('--accent-cyan', '#0f766e');
+                root.style.setProperty('--accent-gold', '#b45309');
+                root.style.setProperty('--text-primary', '#111827');
+                root.style.setProperty('--text-secondary', '#4b5563');
+            } else if (theme === 'bloomberg') {
+                root.style.setProperty('--bg-obsidian', '#060b13');
+                root.style.setProperty('--bg-card', 'rgba(12, 22, 36, 0.7)');
+                root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.04)');
+                root.style.setProperty('--accent-cyan', '#10b981');
+                root.style.setProperty('--accent-gold', '#00a2ff');
+                root.style.setProperty('--text-primary', '#f1f5f9');
+                root.style.setProperty('--text-secondary', '#94a3b8');
+            }
+            
+            // Re-render Monte Carlo simulator path drawing with new theme colors
+            if (document.getElementById('tab-simulator').classList.contains('active-panel')) {
+                runMonteCarlo();
+            }
+        }
+
+        // 2. Dynamic Particle Network Background logic
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = [];
+        const numParticles = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                // Faint dynamic coloring based on active theme
+                const activeColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim();
+                ctx.fillStyle = activeColor + '20'; // Hex opacity addition
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateBg() {
+            ctx.clearRect(0, 0, width, height);
+
+            particles.forEach((p, idx) => {
+                p.update();
+                
+                const dx = mouseX - p.x;
+                const dy = mouseY - p.y;
+                const distMouse = Math.sqrt(dx * dx + dy * dy);
+                if (distMouse < 200) {
+                    p.x += dx * 0.005;
+                    p.y += dy * 0.005;
+                }
+
+                p.draw();
+
+                const activeColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim();
+                for (let j = idx + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const lx = p.x - p2.x;
+                    const ly = p.y - p2.y;
+                    const dist = Math.sqrt(lx * lx + ly * ly);
+                    
+                    if (dist < 100) {
+                        const alpha = (1 - dist / 100) * 0.06;
+                        ctx.strokeStyle = activeColor + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+
+        // 3. SVG Workload speedometer gauge oscillator
+        const speedRing = document.getElementById('speed-ring');
+        setInterval(() => {
+            const val = Math.floor(Math.random() * 15) + 30;
+            document.getElementById('npu-speed').innerText = val + '%';
+            
+            const maxOffset = 44; // Circle perimeter
+            const offsetVal = maxOffset - (val / 100) * maxOffset;
+            speedRing.style.strokeDashoffset = offsetVal;
+        }, 3000);
+
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            const panels = document.querySelectorAll('.feature-panel');
+            panels.forEach(panel => panel.classList.remove('active-panel'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active-panel');
+            
+            const tabsOrder = ['dashboard', 'voice', 'vision', 'simulator', 'memory', 'psychology', 'portfolio', 'tech'];
+            const idx = tabsOrder.indexOf(tabId);
+            if (idx !== -1) {
+                navItems[idx].classList.add('active');
+            }
+
+            const head = document.getElementById('tab-heading');
+            const sub = document.getElementById('tab-subheading');
+            
+            if (tabId === 'dashboard') {
+                head.innerText = 'Dashboard Console';
+                sub.innerText = 'Multi-agent consensus metrics and local performance monitors.';
+            } else if (tabId === 'voice') {
+                head.innerText = 'Voice Assistant Copilot';
+                sub.innerText = 'Talk directly to your Ryzen AI local trading coach.';
+            } else if (tabId === 'vision') {
+                head.innerText = 'Vision AI Pattern Recognition';
+                sub.innerText = 'Auto-detect chart breakouts utilizing local NPU hardware.';
+            } else if (tabId === 'simulator') {
+                head.innerText = 'Monte Carlo Trade Simulator';
+                sub.innerText = 'Simulate equity curve probability distributions.';
+                setTimeout(runMonteCarlo, 200);
+            } else if (tabId === 'memory') {
+                head.innerText = 'Personalized Market Memory';
+                sub.innerText = 'AI insights and weekly performance metrics derived from past trades.';
+            } else if (tabId === 'psychology') {
+                head.innerText = 'Trading Psychology Coach';
+                sub.innerText = 'Addressing behavior, discipline, and emotional biases.';
+            } else if (tabId === 'portfolio') {
+                head.innerText = 'Portfolio Health Intelligence';
+                sub.innerText = 'Diversification, sector concentration, and position overlap alerts.';
+            } else if (tabId === 'tech') {
+                head.innerText = 'Winning Pitch & Technical Stack';
+                sub.innerText = 'How NPU/CPU/GPU cores process agent networks in Docker compose.';
+            }
+        }
+
+        // Side panel explainability drawer toggle
+        function toggleConsensusView() {
+            const panel = document.getElementById('explainability-panel');
+            panel.classList.toggle('open');
+        }
+
+        function openExplainability(ticker, score, reasons) {
+            document.getElementById('explain-title').innerText = ticker;
+            document.getElementById('explain-score').innerText = score + '%';
+            
+            // Premium SVG gauge fill calculation (perimeter = 2 * PI * r = 251.2)
+            const perimeter = 2 * Math.PI * 40; 
+            const offset = perimeter - (score / 100) * perimeter;
+            document.getElementById('explain-gauge-fill').style.strokeDashoffset = offset;
+            
+            const reasonsBox = document.getElementById('explain-reasons');
+            reasonsBox.innerHTML = '';
+            
+            reasons.forEach(r => {
+                const item = document.createElement('div');
+                item.className = 'reason-item';
+                item.innerHTML = `<i data-lucide="check-circle-2"></i><span>${r}</span>`;
+                reasonsBox.appendChild(item);
+            });
+            
+            lucide.createIcons();
+            
+            const panel = document.getElementById('explainability-panel');
+            panel.classList.add('open');
+        }
+
+        // Voice recording simulation
+        let voiceInterval;
+        function toggleVoiceRecording() {
+            const btn = document.getElementById('voice-activation-btn');
+            const wave = document.getElementById('voice-wave');
+            const consoleBox = document.getElementById('voice-console');
+            
+            if (wave.classList.contains('wave-pulsing')) {
+                wave.classList.remove('wave-pulsing');
+                btn.innerHTML = '<span>START SPEAKING</span>';
+                clearInterval(voiceInterval);
+                lucide.createIcons();
+            } else {
+                wave.classList.add('wave-pulsing');
+                btn.innerHTML = '<span>RECORDING...</span>';
+                consoleBox.innerHTML = '<div class="console-line user-line"><span>[TRADER]:</span><span>Listening... ask a stock question now!</span></div>';
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    consoleBox.innerHTML += '<div class="console-line user-line"><span>[TRADER]:</span><span>"Can I buy Infosys tomorrow?"</span></div>';
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                    
+                    setTimeout(() => {
+                        consoleBox.innerHTML += '<div class="console-line"><span>[SYSTEM]:</span><span>Local Ryzen AI processing transcription...</span></div>';
+                        consoleBox.scrollTop = consoleBox.scrollHeight;
+                        
+                        setTimeout(() => {
+                            consoleBox.innerHTML += '<div class="console-line ai-line"><span>[AI COPILOT]:</span><span>"Based on today\'s double-bottom breakout setup, technical indicators are bullish. However, earnings are scheduled next week. The risk profile is medium-high. Waiting for the earnings announcement may be the safer choice."</span></div>';
+                            consoleBox.scrollTop = consoleBox.scrollHeight;
+                            
+                            wave.classList.remove('wave-pulsing');
+                            btn.innerHTML = '<span>START SPEAKING</span>';
+                            lucide.createIcons();
+                        }, 1200);
+                    }, 800);
+                }, 2000);
+            }
+        }
+
+        // Vision Scanner simulation
+        function triggerChartScan() {
+            const windowBox = document.getElementById('scan-window');
+            const uploadIcon = document.getElementById('upload-icon');
+            const instruction = document.getElementById('scan-instruction');
+            const consoleBox = document.getElementById('vision-console');
+            
+            windowBox.classList.add('scanning');
+            uploadIcon.style.display = 'none';
+            instruction.style.display = 'none';
+            
+            consoleBox.innerHTML = '<div class="console-line"><span>[SYSTEM]:</span><span>Ryzen Vision engine initializing local NPU processing...</span></div>';
+            
+            setTimeout(() => {
+                consoleBox.innerHTML += '<div class="console-line"><span>[SYSTEM]:</span><span>Scanning uploaded chart pattern matrices...</span></div>';
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+                
+                setTimeout(() => {
+                    consoleBox.innerHTML += '<div class="console-line text-green"><span>[NPU SCAN COMPLETE]:</span><span>Cup & Handle pattern detected in TCS chart setup (Confidence: 89%). Support line detected at ₹3,880. Buy breakout recommended above ₹3,925.</span></div>';
+                    consoleBox.scrollTop = consoleBox.scrollHeight;
+                    windowBox.classList.remove('scanning');
+                    
+                    instruction.style.display = 'block';
+                    instruction.innerText = 'Scan Complete! Click again to scan another chart.';
+                    uploadIcon.style.display = 'block';
+                }, 1800);
+            }, 1000);
+        }
+
+        // Psychology coaching triggers
+        function triggerPsychologyFeedback(scenario) {
+            const consoleBox = document.getElementById('psy-console');
+            if (scenario === 'loss') {
+                consoleBox.innerHTML = `
+                    <div class="console-line user-line"><span>[TRADER]:</span><span>"I lost ₹20,000 today."</span></div>
+                    <div class="console-line ai-line"><span>[PSYCHOLOGY COACH]:</span><span>"Your recent trading history indicates three consecutive losses. Avoid revenge trading today. Market volatility is elevated, and volume confirmation is weak. Review your journal and wait for higher-probability setups."</span></div>
+                `;
+            } else if (scenario === 'fomo') {
+                consoleBox.innerHTML = `
+                    <div class="console-line user-line"><span>[TRADER]:</span><span>"I feel FOMO on this breakout rally."</span></div>
+                    <div class="console-line ai-line"><span>[PSYCHOLOGY COACH]:</span><span>"A breakout without volume confirmation has a 65% failure rate. Do not chase the candle. Review the Trade Simulator parameters and verify the reward-to-risk ratio. Plan your entries at the retest level."</span></div>
+                `;
+            } else if (scenario === 'win') {
+                consoleBox.innerHTML = `
+                    <div class="console-line user-line"><span>[TRADER]:</span><span>"I got a big win today!"</span></div>
+                    <div class="console-line ai-line"><span>[PSYCHOLOGY COACH]:</span><span>"Congratulations! Remember that overconfidence leads to oversized risk. Do not immediately open another trade. Let the excitement settle, log this trade in your Journal, and stick to your 2% capital risk rule."</span></div>
+                `;
+            }
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // Simulator parameters
+        function updateSimParams() {
+            const cap = document.getElementById('sim-capital').value;
+            const wr = document.getElementById('sim-winrate').value;
+            const rr = document.getElementById('sim-rr').value;
+            
+            document.getElementById('lbl-capital').innerText = '₹' + parseInt(cap).toLocaleString('en-IN');
+            document.getElementById('lbl-winrate').innerText = wr + '%';
+            document.getElementById('lbl-rr').innerText = parseFloat(rr).toFixed(1) + ':1';
+            
+            runMonteCarlo();
+        }
+
+        // Animated Monte Carlo path simulation rendering
+        let simAnimationId;
+        function runMonteCarlo() {
+            const canvas = document.getElementById('simChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (simAnimationId) cancelAnimationFrame(simAnimationId);
+            
+            canvas.width = canvas.parentElement.clientWidth - 24;
+            canvas.height = canvas.parentElement.clientHeight - 24;
+            
+            const initialCapital = parseFloat(document.getElementById('sim-capital').value);
+            const winRate = parseFloat(document.getElementById('sim-winrate').value) / 100.0;
+            const rr = parseFloat(document.getElementById('sim-rr').value);
+            
+            const numSteps = 40;
+            const numPaths = 10;
+            
+            let maxVal = initialCapital * 2.2;
+            let minVal = initialCapital * 0.4;
+            
+            const allPaths = [];
+            for (let p = 0; p < numPaths; p++) {
+                const path = [initialCapital];
+                let current = initialCapital;
+                for (let s = 0; s < numSteps; s++) {
+                    const isWin = Math.random() < winRate;
+                    const changePct = 0.04;
+                    if (isWin) {
+                        current += current * changePct * rr;
+                    } else {
+                        current -= current * changePct;
+                    }
+                    path.push(current);
+                    if (current > maxVal) maxVal = current;
+                    if (current < minVal) minVal = current;
+                }
+                allPaths.push(path);
+            }
+
+            let animationFrame = 0;
+            
+            function drawSimFrame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Grid lines
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+                ctx.lineWidth = 1;
+                for (let i = 1; i < 5; i++) {
+                    const y = (canvas.height / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                const activeColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan').trim();
+                
+                // Draw up to current animation step
+                allPaths.forEach((path, idx) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = idx === 0 ? 3 : 1.5;
+                    ctx.strokeStyle = idx === 0 ? activeColor : activeColor + '20';
+                    if (idx === 0) {
+                        ctx.shadowColor = activeColor + '60';
+                        ctx.shadowBlur = 8;
+                    } else {
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    const drawLimit = Math.min(animationFrame, numSteps);
+                    for (let s = 0; s <= drawLimit; s++) {
+                        const x = (canvas.width / numSteps) * s;
+                        const val = path[s];
+                        const y = canvas.height - ((val - minVal) / (maxVal - minVal)) * canvas.height;
+                        
+                        if (s === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                });
+                
+                ctx.shadowBlur = 0;
+                
+                if (animationFrame < numSteps) {
+                    animationFrame++;
+                    simAnimationId = requestAnimationFrame(drawSimFrame);
+                }
+            }
+            
+            drawSimFrame();
+        }
+    </script>
+
+</body>
+</html>
