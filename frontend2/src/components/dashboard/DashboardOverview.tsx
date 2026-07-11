@@ -100,6 +100,19 @@ export function DashboardOverview() {
     );
   }
 
+  // Handle empty states when data is loaded but empty
+  if (!portfolio) {
+    return (
+      <div className="space-y-6">
+        <EmptyState
+          title="No portfolio data"
+          description="Your portfolio data will appear here once you start trading or connect your brokerage account."
+          icon={<Briefcase className="h-6 w-6 text-primary mx-auto mb-4" />}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Hero Stats */}

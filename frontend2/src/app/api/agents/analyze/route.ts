@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runMultiAgentAnalysis } from '@/lib/agents';
 import { db } from '@/lib/db';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { query, symbol } = await req.json();
 
     if (!query) {
@@ -22,6 +30,7 @@ export async function POST(req: NextRequest) {
         confidence: result.overallConfidence,
         reasoning: result.fusionReasoning,
         inputData: JSON.stringify({ query }),
+        authorId: session.user.id,
       },
     });
 

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { useTradingStore, type AgentResult, type OrchestratorResult } from '@/store/trading-store';
 import {
   Bot, Search, Loader2, TrendingUp, TrendingDown, Clock,
@@ -25,39 +26,66 @@ const AGENT_LABELS: Record<string, { label: string; icon: React.ElementType; col
   tradePlanner: { label: 'Trade Planner', icon: Target, color: 'text-lime-400' },
 };
 
-function AgentCard({ result, index }: { result: AgentResult; index: number }) {
-  const meta = AGENT_LABELS[result.agent] || { label: result.agent, icon: Bot, color: 'text-muted-foreground' };
-  const Icon = meta.icon;
+function AgentCard({ result, index }: { result: AgentResult | null; index: number }) {
+    // If result is null, show skeleton loader
+    if (!result) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.05 }}
+          className="p-3 rounded-lg bg-muted/20 border border-border/50"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4 rounded-full" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+              <Skeleton className="h-3 w-16" />
+            </div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Skeleton className="h-1.5 w-3/4" />
+              <Skeleton className="h-2 w-8" />
+            </div>
+            <Skeleton className="h-3 w-full" />
+          </div>
+        </motion.div>
+      );
+    }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="p-3 rounded-lg bg-muted/20 border border-border/50"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Icon className={cn('w-4 h-4', meta.color)} />
-          <span className="text-xs font-medium">{meta.label}</span>
+    const meta = AGENT_LABELS[result.agent] || { label: result.agent, icon: Bot, color: 'text-muted-foreground' };
+    const Icon = meta.icon;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="p-3 rounded-lg bg-muted/20 border border-border/50"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Icon className={cn('w-4 h-4', meta.color)} />
+            <span className="text-xs font-medium">{meta.label}</span>
+          </div>
+          <Badge className={cn(
+            'text-[10px] font-bold px-2 py-0',
+            result.decision === 'BUY' && 'bg-emerald-400/20 text-emerald-400 border-emerald-400/30',
+            result.decision === 'SELL' && 'bg-red-400/20 text-red-400 border-red-400/30',
+            result.decision === 'WAIT' && 'bg-amber-400/20 text-amber-400 border-amber-400/30',
+          )} variant="outline">
+            {result.decision}
+          </Badge>
         </div>
-        <Badge className={cn(
-          'text-[10px] font-bold px-2 py-0',
-          result.decision === 'BUY' && 'bg-emerald-400/20 text-emerald-400 border-emerald-400/30',
-          result.decision === 'SELL' && 'bg-red-400/20 text-red-400 border-red-400/30',
-          result.decision === 'WAIT' && 'bg-amber-400/20 text-amber-400 border-amber-400/30',
-        )} variant="outline">
-          {result.decision}
-        </Badge>
-      </div>
-      <div className="flex items-center gap-2 mb-1.5">
-        <Progress value={result.confidence} className="h-1.5 flex-1" />
-        <span className="text-[10px] text-muted-foreground w-8 text-right">{result.confidence}%</span>
-      </div>
-      <p className="text-[10px] text-muted-foreground line-clamp-2">{result.reasoning}</p>
-    </motion.div>
-  );
-}
+        <div className="flex items-center gap-2 mb-1.5">
+          <Progress value={result.confidence} className="h-1.5 flex-1" />
+          <span className="text-[10px] text-muted-foreground w-8 text-right">{result.confidence}%</span>
+        </div>
+        <p className="text-[10px] text-muted-foreground line-clamp-2">{result.reasoning}</p>
+      </motion.div>
+    );
+  }
 
 function DecisionGauge({ decision, confidence }: { decision: string; confidence: number }) {
   const color = decision === 'BUY' ? 'emerald' : decision === 'SELL' ? 'red' : 'amber';

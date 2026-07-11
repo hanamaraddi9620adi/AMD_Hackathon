@@ -7,6 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  fullName      String
+  image         String?
+  hashedPassword String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Trade[]       Trade @relation("TradeAuthor")
+  JournalEntry[] JournalEntry @relation("JournalEntryAuthor")
+  AnalysisRecord[] AnalysisRecord @relation("AnalysisRecordAuthor")
+  ChatMessage[]   ChatMessage @relation("ChatMessageAuthor")
+}
+
 model Trade {
   id            String   @id @default(cuid())
   symbol        String
@@ -26,6 +41,8 @@ model Trade {
   exitDate      DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  authorId      String
+  author        User     @relation("TradeAuthor", fields: [authorId], references: [id])
 
   journalEntries JournalEntry[]
   analysisRecords AnalysisRecord[]
@@ -41,6 +58,8 @@ model JournalEntry {
   followedPlan Boolean @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  authorId    String
+  author      User     @relation("JournalEntryAuthor", fields: [authorId], references: [id])
 }
 
 model PortfolioHolding {
@@ -72,6 +91,8 @@ model AnalysisRecord {
   reasoning     String
   inputData     String?  // JSON - original input that triggered analysis
   createdAt     DateTime @default(now())
+  authorId      String
+  author        User     @relation("AnalysisRecordAuthor", fields: [authorId], references: [id])
 }
 
 model MarketMemory {
@@ -116,6 +137,8 @@ model ChatMessage {
   agentType String?  // ORCHESTRATOR, PSYCHOLOGY, PLANNER, etc.
   audioUrl  String?
   createdAt DateTime @default(now())
+  authorId  String
+  author    User     @relation("ChatMessageAuthor", fields: [authorId], references: [id])
 }
 
 model WeeklyReport {

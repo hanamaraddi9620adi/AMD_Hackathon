@@ -17,6 +17,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField } from '@/components/ui/form-field'
 import { Label } from '@/components/ui/label'
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog'
+import { RefreshCw, XIcon } from 'lucide-react'
+
+type FormState = {
+    entryType: string;
+    content: string;
+    mood: string;
+    followedPlan: boolean;
+  }
 
 interface JournalEntry {
   id: string
@@ -37,12 +45,33 @@ export function TradeJournal() {
   const [showForm, setShowForm] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null)
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     entryType: 'REVIEW',
     content: '',
     mood: 'CALM',
     followedPlan: true,
   })
+  const [formErrors, setFormErrors] = useState<Partial<FormState>>({})
+
+  const validateForm = (values: FormState): Partial<FormState> => {
+    const errors: Partial<FormState> = {}
+
+    if (!values.content.trim()) {
+      errors.content = 'Content is required'
+    } else if (values.content.trim().length < 10) {
+      errors.content = 'Please provide more detailed thoughts (minimum 10 characters)'
+    }
+
+    if (!values.entryType) {
+      errors.entryType = 'Entry type is required'
+    }
+
+    if (!values.mood) {
+      errors.mood = 'Mood is required'
+    }
+
+    return errors
+  }
 
   useEffect(() => {
     fetch('/api/agents/journal')
@@ -55,7 +84,12 @@ export function TradeJournal() {
   }, [])
 
   const handleSubmit = async () => {
-    if (!form.content.trim()) return
+    const errors = validateForm(form)
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors)
+      return
+    }
+
     try {
       const res = await fetch('/api/agents/journal', {
         method: 'POST',
@@ -67,9 +101,10 @@ export function TradeJournal() {
         setEntries(prev => [data.data, ...prev])
         setForm({ entryType: 'REVIEW', content: '', mood: 'CALM', followedPlan: true })
         setShowForm(false)
+        setFormErrors({})
       }
     } catch (e) {
-      // Handle error
+      console.error('Failed to save journal entry:', e)
     }
   }
 
@@ -88,7 +123,7 @@ export function TradeJournal() {
       setEntryToDelete(null)
       setShowConfirmation(false)
     } catch (e) {
-      // Handle error
+      console.error('Failed to delete journal entry:', e)
     }
   }
 
@@ -99,7 +134,7 @@ export function TradeJournal() {
       const data = await res.json()
       if (data.success) setReport(data.data.recommendations)
     } catch (e) {
-      // Handle error
+      console.error('Failed to generate journal report:', e)
     }
     setReportLoading(false)
   }
@@ -157,6 +192,7 @@ export function TradeJournal() {
               <FormField
                 label="Entry Type"
                 htmlFor="entry-type"
+                error={formErrors.entryType}
               >
                 <Select
                   defaultValue="REVIEW"
@@ -173,11 +209,15 @@ export function TradeJournal() {
                     <SelectItem value="LESSON">Lesson</SelectItem>
                   </SelectContent>
                 </Select>
+                {formErrors.entryType && (
+                  <p className="text-xs text-destructive mt-1">{formErrors.entryType}</p>
+                )}
               </FormField>
 
               <FormField
                 label="Mood"
                 htmlFor="mood"
+                error={formErrors.mood}
               >
                 <Select
                   defaultValue="CALM"
@@ -195,20 +235,27 @@ export function TradeJournal() {
                     <SelectItem value="GREEDY">Greedy</SelectItem>
                   </SelectContent>
                 </Select>
+                {formErrors.mood && (
+                  <p className="text-xs text-destructive mt-1">{formErrors.mood}</p>
+                )}
               </FormField>
             </div>
 
             <FormField
-              label="What happened?"
-              htmlFor="journal-content"
-            >
-              <Textarea
-                value={form.content}
-                onChange={(e) => setForm(p => ({ ...p, content: e.target.value }))}
-                placeholder="What happened? What did you learn? Did you follow your plan?"
-                className="bg-muted/30 border-border text-xs min-h-[80px]"
-              />
-            </FormField>
+                label="What happened?"
+                htmlFor="journal-content"
+                error={formErrors.content}
+              >
+                <Textarea
+                  value={form.content}
+                  onChange={(e) => setForm(p => ({ ...p, content: e.target.value }))}
+                  placeholder="What happened? What did you learn? Did you follow your plan?"
+                  className="bg-muted/30 border-border text-xs min-h-[80px]"
+                />
+                {formErrors.content && (
+                  <p className="text-xs text-destructive mt-1">{formErrors.content}</p>
+                )}
+              </FormField>
 
             <div className="flex items-center space-x-3">
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -280,16 +327,23 @@ export function TradeJournal() {
         <CardContent className="p-4">
           <div className="max-h-[500px] overflow-y-auto custom-scrollbar space-y-3">
             {loading ? (
-              <div className="text-center py-8">
-                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin mx-auto" />
+              <div className="space-y-4">
+                <SkeletonText lines={3} className="w-full" />
+                <SkeletonText lines={2} className="w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
               </div>
             ) : entries.length === 0 ? (
-              <div className="text-xs text-muted-foreground text-center py-8">
-                No journal entries yet. Start documenting your trades.
-              </div>
+              <EmptyState
+                title="No journal entries yet"
+                description="Start documenting your trades to build your trading journal and improve your decision-making."
+                action={<Button size="sm" onClick={() => setShowForm(true)} className="bg-primary text-primary-foreground">
+                  <Plus className="mr-2 h-4 w-4" /> Add First Entry
+                </Button>}
+                icon={<BookOpen className="h-5 w-5" />}
+              />
             ) : (
               entries.map((entry) => (
-                <div key={entry.id} className="p-3 rounded-lg bg-muted/20 border border-border/50">
+                <div key={entry.id} className="p-3 rounded-lg bg-muted/20 border border-border/50 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-[9px]">{entry.entryType}</Badge>

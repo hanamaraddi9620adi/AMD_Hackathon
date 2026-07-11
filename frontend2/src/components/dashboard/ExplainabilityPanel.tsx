@@ -13,7 +13,15 @@ import { useTradingStore } from '@/store/trading-store';
 
 export function ExplainabilityPanel() {
   const { analysisResult, setActivePanel } = useTradingStore();
-  const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
+  interface AnalysisItem {
+    id: string;
+    agent: string;
+    timestamp: Date;
+    summary: string;
+    score: number;
+  }
+
+  const [recentAnalyses, setRecentAnalyses] = useState<AnalysisItem[]>([]);
 
   useEffect(() => {
     // The analyses are stored in the analysisResult from the agent panel

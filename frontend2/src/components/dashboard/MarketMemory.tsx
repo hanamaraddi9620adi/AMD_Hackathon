@@ -76,16 +76,14 @@ export function MarketMemory() {
         </CardContent>
       </Card>
 
-      {loading && (
+      {loading ? (
         <Card className="bg-card border-border">
           <CardContent className="p-8 flex items-center justify-center gap-3">
             <Loader2 className="w-5 h-5 text-primary animate-spin" />
             <span className="text-sm text-muted-foreground">Searching memory...</span>
           </CardContent>
         </Card>
-      )}
-
-      {memory && !loading && (
+      ) : memory ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           {/* Stats Row */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -194,6 +192,27 @@ export function MarketMemory() {
             </Card>
           )}
         </motion.div>
+      ) : (
+        <Card className="bg-card border-border">
+          <CardContent className="p-8 text-center">
+            <Database className="w-10 h-10 text-primary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Market Memory</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Search for any stock symbol to see its historical trading patterns, win rates, and AI-powered insights based on your past trades.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {['INFOSYS', 'TCS', 'RELIANCE', 'HDFCBANK', 'ICICIBANK'].map(s => (
+                <button
+                  key={s}
+                  onClick={() => { setSymbol(s); fetchMemory(s); }}
+                  className="text-[10px] px-3 py-2 rounded-full bg-muted/30 border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </Card>
+        )
       )}
     </div>
   );

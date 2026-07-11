@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 export function PsychologyCoach() {
   const { psychologyMessages, addPsychologyMessage, psychologyLoading, setPsychologyLoading } = useTradingStore()
   const [input, setInput] = useState('')
+  const [inputError, setInputError] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -26,8 +27,24 @@ export function PsychologyCoach() {
     }
   }, [psychologyMessages])
 
+  const validateInput = (value: string): string | null => {
+    if (!value.trim()) {
+      return 'Please enter a message'
+    }
+    if (value.trim().length < 3) {
+      return 'Message must be at least 3 characters long'
+    }
+    return null
+  }
+
   const sendMessage = async () => {
-    if (!input.trim() || psychologyLoading) return
+    const error = validateInput(input)
+    if (error || psychologyLoading) {
+      setInputError(error)
+      return
+    }
+    setInputError(null)
+
     const userMsg = input.trim()
     setInput('')
 
@@ -65,6 +82,13 @@ export function PsychologyCoach() {
     setPsychologyLoading(false)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
+
   const quickPrompts = [
     'I lost ₹20,000 today.',
     'I feel like revenge trading.',
@@ -86,68 +110,67 @@ export function PsychologyCoach() {
 
         {/* Messages */}
         <CardContent className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-2" ref={scrollRef}>
-          {psychologyMessages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-16 h-16 rounded-2xl bg-pink-400/10 flex items-center justify-center mb-4">
-                <Heart className="w-8 h-8 text-pink-400" />
-              </div>
-              <p className="text-sm font-medium text-foreground mb-1">Your Trading Psychology Coach</p>
-              <p className="text-xs text-muted-foreground max-w-sm mb-6">
-                I help you manage emotions, avoid cognitive biases, and make disciplined trading decisions.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 max-w-md">
-                {quickPrompts.map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setInput(p)}
-                    className="text-[10px] px-3 py-1.5 rounded-full bg-muted/30 border border-border/50 text-muted-foreground hover:text-foreground hover:border-pink-400/40 transition-colors"
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {psychologyMessages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={cn('flex gap-3 mb-4', msg.role === 'USER' ? 'flex-row-reverse' : '')}
-            >
-              <div className={cn(
-                'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
-                msg.role === 'USER' ? 'bg-primary/10' : 'bg-pink-400/10'
-              )}>
-                {msg.role === 'USER'
-                  ? <User className="w-3.5 h-3.5 text-primary" />
-                  : <Brain className="w-3.5 h-3.5 text-pink-400" />}
-              </div>
-              <div className={cn(
-                'max-w-[80%] p-3 rounded-xl text-xs leading-relaxed',
-                msg.role === 'USER'
-                  ? 'bg-primary/10 border border-primary/20 text-foreground'
-                  : 'bg-muted/30 border border-border text-foreground'
-              )}>
-                {msg.content}
-              </div>
-            </motion.div>
-          ))}
-
-          {psychologyLoading && (
-            <div className="flex gap-3 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-pink-400/10 flex items-center justify-center shrink-0">
-                <Brain className="w-3.5 h-3.5 text-pink-400" />
-              </div>
-              <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-3 h-3 text-pink-400 animate-spin" />
-                  <span className="text-xs text-muted-foreground">Analyzing your emotional state...</span>
+          {psychologyMessages.length === 0 && psychologyLoading ? (
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-pink-400/10 flex items-center justify-center mb-4">
+                  <Heart className="w-8 h-8 text-pink-400" />
+                </div>
+                <div className="space-y-2">
+                  <SkeletonText lines={2} className="w-24 mx-auto" />
+                  <Skeleton className="h-4 w-32 mx-auto" />
+                  <SkeletonText lines={1} className="w-1/2 mx-auto" />
                 </div>
               </div>
-            </div>
-          )}
+            ) : psychologyMessages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-pink-400/10 flex items-center justify-center mb-4">
+                  <Heart className="w-8 h-8 text-pink-400" />
+                </div>
+                <p className="text-sm font-medium text-foreground mb-1">Your Trading Psychology Coach</p>
+                <p className="text-xs text-muted-foreground max-w-sm mb-6">
+                  I help you manage emotions, avoid cognitive biases, and make disciplined trading decisions.
+                </p>
+                <div className="flex flex-wrap justify-center gap-2 max-w-md">
+                  {quickPrompts.map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setInput(p)}
+                      className="text-[10px] px-3 py-1.5 rounded-full bg-muted/30 border border-border/50 text-muted-foreground hover:text-foreground hover:border-pink-400/40 transition-colors"
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-2" ref={scrollRef}>
+                {psychologyMessages.map((msg) => (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={cn('flex gap-3 mb-4', msg.role === 'USER' ? 'flex-row-reverse' : '')}
+                  >
+                    <div className={cn(
+                      'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
+                      msg.role === 'USER' ? 'bg-primary/10' : 'bg-pink-400/10'
+                    )}>
+                      {msg.role === 'USER'
+                        ? <User className="w-3.5 h-3.5 text-primary" />
+                        : <Brain className="w-3.5 h-3.5 text-pink-400" />}
+                    </div>
+                    <div className={cn(
+                      'max-w-[80%] p-3 rounded-xl text-xs leading-relaxed',
+                      msg.role === 'USER'
+                        ? 'bg-primary/10 border border-primary/20 text-foreground'
+                        : 'bg-muted/30 border border-border text-foreground'
+                    )}>
+                      {msg.content}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
         </CardContent>
 
         {/* Input */}
@@ -161,15 +184,18 @@ export function PsychologyCoach() {
                 id="psychology-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                onKeyDown={handleKeyDown}
                 placeholder="Share what's on your mind..."
                 className="flex-1 min-h-[40px] max-h-[100px] bg-muted/30 border-border text-xs resize-none"
                 rows={1}
               />
+              {inputError && (
+                <p className="text-xs text-destructive mt-1">{inputError}</p>
+              )}
             </FormField>
             <Button
               onClick={sendMessage}
-              disabled={!input.trim() || psychologyLoading}
+              disabled={!!inputError || !input.trim() || psychologyLoading}
               className="bg-pink-500 hover:bg-pink-600 text-white h-10 w-10 p-0 shrink-0 flex items-center justify-center"
             >
               {psychologyLoading ? (
