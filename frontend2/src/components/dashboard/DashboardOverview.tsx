@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SkeletonText } from '@/components/ui/skeleton-text';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface PortfolioSummary {
   totalInvested: number;
