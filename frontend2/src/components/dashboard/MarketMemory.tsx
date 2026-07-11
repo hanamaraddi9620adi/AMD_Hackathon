@@ -211,9 +211,10 @@ export function MarketMemory() {
                 </button>
               ))}
             </div>
-          </Card>
-        )
-      )}
-    </div>
-  );
+          </CardContent>
+        </Card>
+      )
+    }
+  </div>
+);
 }

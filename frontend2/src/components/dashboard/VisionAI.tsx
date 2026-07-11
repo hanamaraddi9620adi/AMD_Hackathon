@@ -276,14 +276,14 @@ export function VisionAI() {
                         Analyze with Vision AI
                       </>
                     )}
-                  </button>
+                  </Button>
                   <Button
                     onClick={downloadResult}
                     disabled={!visionResult}
                     className="ml-4 btn btn-outline"
                   >
                     Download Analysis
-                  </button>
+                  </Button>
                 </div>
               </motion.div>
             )}

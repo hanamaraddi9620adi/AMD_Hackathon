@@ -1,4 +1,6 @@
-import { SignIn } from "next-auth/react";
+'use client';
+
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,7 +19,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      await SignIn("credentials", {
+      await signIn("credentials", {
         redirect: false,
         ...Object.fromEntries(new FormData(e.currentTarget)),
       });

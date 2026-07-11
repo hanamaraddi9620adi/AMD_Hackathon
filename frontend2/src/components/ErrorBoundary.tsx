@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -60,6 +60,6 @@ function ErrorFallback({ error, resetError }: { error: Error; resetError: () => 
           </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

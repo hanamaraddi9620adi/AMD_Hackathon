@@ -41,7 +41,7 @@ function Textarea({
     <Comp
       data-slot="textarea"
       className={cn(textareaVariants({ variant, size, className }))}
-      {...props>
+      {...props}
     />
   )
 }

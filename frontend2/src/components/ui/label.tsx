@@ -9,25 +9,6 @@ function Label({
   className,
   htmlFor,
   ...props
-// We need Row Radio Comp...
-
-
-Wait, let me just rewrite the label component properly:
-
-<tool_call>
-<function=Write>
-<parameter=content>
-"use client"
-
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
-
-import { cn } from "@/lib/utils"
-
-function Label({
-  className,
-  htmlFor,
-  ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   return (
     <LabelPrimitive.Root

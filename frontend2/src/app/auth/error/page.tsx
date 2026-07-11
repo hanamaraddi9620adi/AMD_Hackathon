@@ -1,5 +1,8 @@
+'use client';
+
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function ErrorPage() {
   const router = useRouter();

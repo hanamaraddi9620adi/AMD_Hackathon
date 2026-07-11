@@ -16,10 +16,10 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  Trade[]       Trade @relation("TradeAuthor")
-  JournalEntry[] JournalEntry @relation("JournalEntryAuthor")
-  AnalysisRecord[] AnalysisRecord @relation("AnalysisRecordAuthor")
-  ChatMessage[]   ChatMessage @relation("ChatMessageAuthor")
+  trades          Trade[]          @relation("TradeAuthor")
+  journalEntries  JournalEntry[]   @relation("JournalEntryAuthor")
+  analyses        AnalysisRecord[] @relation("AnalysisRecordAuthor")
+  chatMessages    ChatMessage[]    @relation("ChatMessageAuthor")
 }
 
 model Trade {
