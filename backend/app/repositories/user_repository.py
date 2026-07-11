@@ -1,53 +1,69 @@
-from typing import Dict, Optional
-from uuid import uuid4
+from sqlalchemy.orm import Session
+
+from app.models.user import User
 
 
 class UserRepository:
 
-    def __init__(self):
-        self.users: Dict[str, dict] = {}
+    def create_user(
+        self,
+        db: Session,
+        user: User,
+    ) -> User:
 
-    def create_user(self, user_data: dict):
+        db.add(user)
 
-        user_id = str(uuid4())
+        db.commit()
 
-        user_data["id"] = user_id
+        db.refresh(user)
 
-        self.users[user_data["email"]] = user_data
+        return user
 
-        return user_data
+    def get_user_by_email(
+        self,
+        db: Session,
+        email: str,
+    ) -> User | None:
 
-    def get_user_by_email(self, email: str):
+        return (
+            db.query(User)
+            .filter(User.email == email)
+            .first()
+        )
 
-        return self.users.get(email)
+    def get_user_by_id(
+        self,
+        db: Session,
+        user_id: str,
+    ) -> User | None:
 
-    def get_user_by_id(self, user_id: str):
+        return (
+            db.query(User)
+            .filter(User.id == user_id)
+            .first()
+        )
 
-        for user in self.users.values():
+    def update_user(
+        self,
+        db: Session,
+        user: User,
+    ) -> User:
 
-            if user["id"] == user_id:
+        db.commit()
 
-                return user
+        db.refresh(user)
 
-        return None
+        return user
 
-    def update_user(self, email: str, updated_data: dict):
+    def delete_user(
+        self,
+        db: Session,
+        user: User,
+    ):
 
-        if email not in self.users:
+        db.delete(user)
 
-            return None
-
-        self.users[email].update(updated_data)
-
-        return self.users[email]
-
-    def delete_user(self, email: str):
-
-        return self.users.pop(email, None)
-
-    def list_users(self):
-
-        return list(self.users.values())
+        db.commit()
 
 
 user_repository = UserRepository()
