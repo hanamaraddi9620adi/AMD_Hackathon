@@ -76,6 +76,82 @@ export const motionVariants = {
     }
   },
 
+  // 3D Flip variants (NEW)
+  flipX: {
+    hidden: { rotateX: -90, opacity: 0 },
+    visible: {
+      rotateX: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 20 }
+    }
+  },
+
+  flipY: {
+    hidden: { rotateY: -90, opacity: 0 },
+    visible: {
+      rotateY: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300, damping: 20 }
+    }
+  },
+
+  // 3D Rotation variants (NEW)
+  rotate3d: {
+    hidden: { rotate: 0, rotateX: 0, rotateY: 0, opacity: 0 },
+    visible: {
+      rotate: 0,
+      rotateX: 0,
+      rotateY: 0,
+      opacity: 1,
+      transition: {
+        duration: 1.5,
+        ease: "anticipate"
+      }
+    },
+    hover: {
+      rotate: 0,
+      rotateX: 10,
+      rotateY: 10,
+      transition: { duration: 0.5 }
+    }
+  },
+
+  // 3D Tilt effect (NEW)
+  tilt: {
+    whileHover: {
+      rotateX: 10,
+      rotateY: -10,
+      scale: 1.02
+    },
+    whileTap: {
+      rotateX: 5,
+      rotateY: -5,
+      scale: 0.98
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  },
+
+  // 3D Pop effect (NEW)
+  pop3d: {
+    whileHover: {
+      scale: 1.05,
+      rotateY: 5
+    },
+    whileTap: {
+      scale: 0.95,
+      rotateY: 2
+    },
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  },
+
   // Stagger variants
   staggerContainer: {
     hidden: {},
@@ -104,5 +180,59 @@ export const motionVariants = {
   pulse: {
     whileHover: { scale: [1, 1.05, 1] },
     transition: { repeat: Infinity, duration: 2 }
+  },
+
+  // 3D Pulse (NEW)
+  pulse3d: {
+    whileHover: {
+      scale: [1, 1.07, 1],
+      rotateY: [0, 5, 0]
+    },
+    transition: {
+      repeat: Infinity,
+      duration: 3,
+      ease: "easeInOut"
+    }
+  },
+
+  // Page transition variants (NEW)
+  pageEnter: {
+    initial: {
+      opacity: 0,
+      y: 20,
+      rotateX: 10
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      rotateX: -10
+    },
+    transition: {
+      duration: 0.5,
+      ease: "anticipate"
+    }
+  },
+
+  // Card hover 3D effect (NEW)
+  cardHover: {
+    whileHover: {
+      rotateY: 8,
+      rotateX: -5,
+      scale: 1.02,
+      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+    },
+    whileTap: {
+      scale: 0.98
+    },
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 20
+    }
   }
 };

@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { SignOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -12,6 +14,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { setTheme, theme } = useTheme();
 
   return (
     <>
@@ -57,6 +60,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push("/")}>
                 Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                setTheme(theme === "dark" ? "light" : "dark");
+              }}>
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>

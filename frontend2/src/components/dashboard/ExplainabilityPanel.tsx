@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTradingStore } from '@/store/trading-store';
+import { motion } from 'framer-motion';
+import { motionVariants } from '@/lib/motion-variants';
 
 export function ExplainabilityPanel() {
   const { analysisResult, setActivePanel } = useTradingStore();
@@ -60,27 +62,39 @@ export function ExplainabilityPanel() {
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 rounded-xl bg-muted/20">
+            <motion.div
+              whileHover={{ scale: 1.05, rotateY: 8, rotateX: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-center p-4 rounded-xl bg-muted/20"
+            >
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-2">
                 <Brain className="w-5 h-5 text-primary" />
               </div>
               <p className="text-xs font-medium mb-1">Multi-Agent Analysis</p>
               <p className="text-[10px] text-muted-foreground">8 specialized agents analyze from different perspectives independently</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/20">
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05, rotateY: 8, rotateX: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-center p-4 rounded-xl bg-muted/20"
+            >
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-2">
                 <BarChart3 className="w-5 h-5 text-primary" />
               </div>
               <p className="text-xs font-medium mb-1">Decision Fusion</p>
               <p className="text-[10px] text-muted-foreground">Weighted consensus engine combines all agent outputs into one decision</p>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-muted/20">
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05, rotateY: 8, rotateX: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-center p-4 rounded-xl bg-muted/20"
+            >
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-2">
                 <Lightbulb className="w-5 h-5 text-primary" />
               </div>
               <p className="text-xs font-medium mb-1">Transparent Reasoning</p>
               <p className="text-[10px] text-muted-foreground">Every recommendation comes with score, reasons, and risk factors</p>
-            </div>
+            </motion.div>
           </div>
         </CardContent>
       </Card>
@@ -93,7 +107,12 @@ export function ExplainabilityPanel() {
         <CardContent className="px-4 pb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {agents.map((agent) => (
-              <div key={agent.name} className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/50">
+              <motion.div
+                key={agent.name}
+                whileHover={{ scale: 1.05, rotateY: 6 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/50"
+              >
                 <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center shrink-0', agent.bg)}>
                   <agent.icon className={cn('w-4 h-4', agent.color)} />
                 </div>

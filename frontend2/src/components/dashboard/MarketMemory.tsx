@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { motionVariants } from '@/lib/motion-variants';
 
 interface MemoryData {
   symbol: string;

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { motionVariants } from '@/lib/motion-variants';
 
 const AGENT_LABELS: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   marketScanner: { label: 'Market Scanner', icon: TrendingUp, color: 'text-emerald-400' },
@@ -27,13 +28,16 @@ const AGENT_LABELS: Record<string, { label: string; icon: React.ElementType; col
 };
 
 function AgentCard({ result, index }: { result: AgentResult | null; index: number }) {
-    // If result is null, show skeleton loader
+    // If result is null, show skeleton loader with 3D pulse
     if (!result) {
       return (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
+          variants={[
+            { opacity: 0, y: 10, scale: 0.95 },
+            { opacity: 1, y: 0, scale: 1, transition: { delay: index * 0.05 } }
+          ]}
+          initial="initial"
+          animate="animate"
           className="p-3 rounded-lg bg-muted/20 border border-border/50"
         >
           <div className="space-y-3">
@@ -59,9 +63,9 @@ function AgentCard({ result, index }: { result: AgentResult | null; index: numbe
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
+        variants={motionVariants.cardHover}
+        initial="hover"
+        animate="hover"
         className="p-3 rounded-lg bg-muted/20 border border-border/50"
       >
         <div className="flex items-center justify-between mb-2">
