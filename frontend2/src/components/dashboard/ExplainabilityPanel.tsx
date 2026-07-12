@@ -120,7 +120,7 @@ export function ExplainabilityPanel() {
                   <p className="text-xs font-medium">{agent.name}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">{agent.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </CardContent>
