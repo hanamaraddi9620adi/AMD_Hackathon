@@ -6,6 +6,19 @@ import { XIcon, AlertTriangleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"
 
 export function ConfirmationDialog({
   trigger,
